@@ -673,25 +673,31 @@ export const TaskbarAppIcon = GObject.registerClass(
         ;(this._focusedDots = new St.DrawingArea()),
           (this._unfocusedDots = new St.DrawingArea())
 
-        this._focusedDotsRepaintId = this._focusedDots.connect('repaint', () => {
-          if (!this._dashItemContainer.animatingOut)
-            // don't draw and trigger more animations if the icon is in the middle of
-            // being removed from the panel
-            this._drawRunningIndicator(
-              this._focusedDots,
-              SETTINGS.get_string('dot-style-focused'),
-              true,
-            )
-        })
+        this._focusedDotsRepaintId = this._focusedDots.connect(
+          'repaint',
+          () => {
+            if (!this._dashItemContainer.animatingOut)
+              // don't draw and trigger more animations if the icon is in the middle of
+              // being removed from the panel
+              this._drawRunningIndicator(
+                this._focusedDots,
+                SETTINGS.get_string('dot-style-focused'),
+                true,
+              )
+          },
+        )
 
-        this._unfocusedDotsRepaintId = this._unfocusedDots.connect('repaint', () => {
-          if (!this._dashItemContainer.animatingOut)
-            this._drawRunningIndicator(
-              this._unfocusedDots,
-              SETTINGS.get_string('dot-style-unfocused'),
-              false,
-            )
-        })
+        this._unfocusedDotsRepaintId = this._unfocusedDots.connect(
+          'repaint',
+          () => {
+            if (!this._dashItemContainer.animatingOut)
+              this._drawRunningIndicator(
+                this._unfocusedDots,
+                SETTINGS.get_string('dot-style-unfocused'),
+                false,
+              )
+          },
+        )
 
         this._dotsContainer.add_child(this._unfocusedDots)
 
@@ -2118,11 +2124,26 @@ export const ShowAppsIconWrapper = class extends EventEmitter {
     // No action on clicked (showing of the appsview is controlled elsewhere)
     this._onClicked = () => this._removeMenuTimeout()
 
-    this._actorLeaveEventId = this.actor.connect('leave-event', this._onLeaveEvent.bind(this))
-    this._actorButtonPressEventId = this.actor.connect('button-press-event', this._onButtonPress.bind(this))
-    this._actorTouchEventId = this.actor.connect('touch-event', this._onTouchEvent.bind(this))
-    this._actorClickedId = this.actor.connect('clicked', this._onClicked.bind(this))
-    this._actorPopupMenuId = this.actor.connect('popup-menu', this._onKeyboardPopupMenu.bind(this))
+    this._actorLeaveEventId = this.actor.connect(
+      'leave-event',
+      this._onLeaveEvent.bind(this),
+    )
+    this._actorButtonPressEventId = this.actor.connect(
+      'button-press-event',
+      this._onButtonPress.bind(this),
+    )
+    this._actorTouchEventId = this.actor.connect(
+      'touch-event',
+      this._onTouchEvent.bind(this),
+    )
+    this._actorClickedId = this.actor.connect(
+      'clicked',
+      this._onClicked.bind(this),
+    )
+    this._actorPopupMenuId = this.actor.connect(
+      'popup-menu',
+      this._onKeyboardPopupMenu.bind(this),
+    )
 
     this._menu = null
     this._menuManager = new PopupMenu.PopupMenuManager(this.actor)

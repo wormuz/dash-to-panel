@@ -93,13 +93,13 @@ export const PreviewMenu = GObject.registerClass(
         y_expand: true,
         x_align:
           Clutter.ActorAlign[
-          geom.position != St.Side.RIGHT
-            ? rtl
-              ? 'END'
-              : 'START'
-            : rtl
-              ? 'START'
-              : 'END'
+            geom.position != St.Side.RIGHT
+              ? rtl
+                ? 'END'
+                : 'START'
+              : rtl
+                ? 'START'
+                : 'END'
           ],
         y_align:
           Clutter.ActorAlign[geom.position != St.Side.BOTTOM ? 'START' : 'END'],
@@ -206,10 +206,10 @@ export const PreviewMenu = GObject.registerClass(
           setStyle(
             this.menu,
             'background: ' +
-            Utils.getrgbaColor(
-              this.panel.dynamicTransparency.backgroundColorRgb,
-              alphaBg,
-            ),
+              Utils.getrgbaColor(
+                this.panel.dynamicTransparency.backgroundColorRgb,
+                alphaBg,
+              ),
           )
         }
 
@@ -561,7 +561,7 @@ export const PreviewMenu = GObject.registerClass(
       previewsHeight = Math.min(previewsHeight, this.panel.monitor.height)
       this._updateScrollFade(
         previewsWidth < this.panel.monitor.width &&
-        previewsHeight < this.panel.monitor.height,
+          previewsHeight < this.panel.monitor.height,
       )
 
       if (this.panel.geom.vertical) {
@@ -700,7 +700,7 @@ export const PreviewMenu = GObject.registerClass(
             Main.layoutManager._queueUpdateRegions()
           }
 
-          ; (onComplete || (() => { }))()
+          ;(onComplete || (() => {}))()
         },
       }
 
@@ -900,8 +900,7 @@ export const Preview = GObject.registerClass(
         opacity: 0,
         x_expand: true,
         y_expand: true,
-        x_align:
-          Clutter.ActorAlign[isLeftButtons !== rtl ? 'START' : 'END'],
+        x_align: Clutter.ActorAlign[isLeftButtons !== rtl ? 'START' : 'END'],
         y_align: Clutter.ActorAlign[isTopHeader ? 'START' : 'END'],
       })
 
@@ -992,17 +991,17 @@ export const Preview = GObject.registerClass(
       setStyle(
         this._closeButtonBin,
         'padding: ' +
-        (headerHeight
-          ? Math.round(
-            ((headerHeight - closeButtonHeight) * 0.5) / scaleFactor,
-          )
-          : 4) +
-        'px;' +
-        this._getBackgroundColor(
-          HEADER_COLOR_OFFSET,
-          headerHeight ? 1 : 0.6,
-        ) +
-        closeButtonBorderRadius,
+          (headerHeight
+            ? Math.round(
+                ((headerHeight - closeButtonHeight) * 0.5) / scaleFactor,
+              )
+            : 4) +
+          'px;' +
+          this._getBackgroundColor(
+            HEADER_COLOR_OFFSET,
+            headerHeight ? 1 : 0.6,
+          ) +
+          closeButtonBorderRadius,
       )
     }
 
@@ -1167,8 +1166,8 @@ export const Preview = GObject.registerClass(
         this._previewMenu.peekInitialWorkspaceIndex < 0
           ? Utils.getCurrentWorkspace()
           : Utils.getWorkspaceByIndex(
-            this._previewMenu.peekInitialWorkspaceIndex,
-          )
+              this._previewMenu.peekInitialWorkspaceIndex,
+            )
 
       this._previewMenu.hasGrab = true
 
@@ -1182,20 +1181,23 @@ export const Preview = GObject.registerClass(
       let menu = Main.wm._windowMenuManager._manager._menus[0]
 
       this._contextMenu = menu
-      this._menuStateChangedId = menu.connect('open-state-changed', (menu, opened) => {
-        if (!opened) {
-          delete this._previewMenu.hasGrab
+      this._menuStateChangedId = menu.connect(
+        'open-state-changed',
+        (menu, opened) => {
+          if (!opened) {
+            delete this._previewMenu.hasGrab
 
-          if (!this._previewMenu.menu.hover) this._previewMenu.close()
-        }
-      })
+            if (!this._previewMenu.menu.hover) this._previewMenu.close()
+          }
+        },
+      )
 
       if (this.window.get_workspace() != currentWorkspace) {
         let menuItem = new PopupMenu.PopupMenuItem(
           _('Move to current Workspace') +
-          ' [' +
-          (currentWorkspace.index() + 1) +
-          ']',
+            ' [' +
+            (currentWorkspace.index() + 1) +
+            ']',
         )
         let menuItems = menu.box.get_children()
         let insertIndex = Utils.findIndex(
@@ -1275,7 +1277,7 @@ export const Preview = GObject.registerClass(
         setStyle(
           this._windowTitle,
           (rtl ? 'padding-left: 4px;' : 'padding-right: 4px;') +
-          commonTitleStyles,
+            commonTitleStyles,
         )
         this._updateWindowTitle()
       }
@@ -1364,7 +1366,7 @@ export const Preview = GObject.registerClass(
         opacity: 0,
         layout_manager:
           frameRect.width != bufferRect.width ||
-            frameRect.height != bufferRect.height
+          frameRect.height != bufferRect.height
             ? new WindowCloneLayout(frameRect, bufferRect)
             : new Clutter.BinLayout(),
       })

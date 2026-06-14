@@ -1449,9 +1449,9 @@ export const Panel = GObject.registerClass(
         if (this._showDesktopButton) return
 
         this._showDesktopButton = new St.Bin({
-	  style_class: this.geom.vertical
-		? 'showdesktop-button-vertical'
-		: 'showdesktop-button',
+          style_class: this.geom.vertical
+            ? 'showdesktop-button-vertical'
+            : 'showdesktop-button',
           reactive: true,
           can_focus: true,
           // x_fill: true,
@@ -1490,7 +1490,10 @@ export const Panel = GObject.registerClass(
                 () => {
                   this._hiddenDesktopWorkspace =
                     Utils.DisplayWrapper.getWorkspaceManager().get_active_workspace()
-                  this._toggleWorkspaceWindows(true, this._hiddenDesktopWorkspace)
+                  this._toggleWorkspaceWindows(
+                    true,
+                    this._hiddenDesktopWorkspace,
+                  )
                 },
               ])
             }
@@ -1509,7 +1512,10 @@ export const Panel = GObject.registerClass(
               if (this._timeoutsHandler.getId(T4)) {
                 this._timeoutsHandler.remove(T4)
               } else if (this._hiddenDesktopWorkspace) {
-                this._toggleWorkspaceWindows(false, this._hiddenDesktopWorkspace)
+                this._toggleWorkspaceWindows(
+                  false,
+                  this._hiddenDesktopWorkspace,
+                )
               }
             }
           }),

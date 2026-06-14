@@ -790,79 +790,91 @@ export const Taskbar = class extends EventEmitter {
     let appIconSignalIds = []
     let draggableSignalIds = []
 
-    appIconSignalIds.push(appIcon.connect('menu-state-changed', (appIcon, opened) => {
-      this._itemMenuStateChanged(item, opened)
-    }))
+    appIconSignalIds.push(
+      appIcon.connect('menu-state-changed', (appIcon, opened) => {
+        this._itemMenuStateChanged(item, opened)
+      }),
+    )
 
     if (appIcon._draggable) {
-      draggableSignalIds.push(appIcon._draggable.connect('drag-begin', () => {
-        appIcon.opacity = 0
-        appIcon.isDragged = 1
-        this._dropIconAnimations()
-      }))
-      draggableSignalIds.push(appIcon._draggable.connect('drag-end', () => {
-        appIcon.opacity = 255
-        delete appIcon.isDragged
-        this._updateAppIcons()
-      }))
+      draggableSignalIds.push(
+        appIcon._draggable.connect('drag-begin', () => {
+          appIcon.opacity = 0
+          appIcon.isDragged = 1
+          this._dropIconAnimations()
+        }),
+      )
+      draggableSignalIds.push(
+        appIcon._draggable.connect('drag-end', () => {
+          appIcon.opacity = 255
+          delete appIcon.isDragged
+          this._updateAppIcons()
+        }),
+      )
     }
 
-    appIconSignalIds.push(appIcon.connect('notify::hover', () => {
-      if (appIcon.hover) {
-        this._timeoutsHandler.add([
-          T1,
-          100,
-          () =>
-            Utils.ensureActorVisibleInScrollView(
-              this._scrollView,
-              appIcon,
-              this._scrollView._dtpFadeSize,
-            ),
-        ])
+    appIconSignalIds.push(
+      appIcon.connect('notify::hover', () => {
+        if (appIcon.hover) {
+          this._timeoutsHandler.add([
+            T1,
+            100,
+            () =>
+              Utils.ensureActorVisibleInScrollView(
+                this._scrollView,
+                appIcon,
+                this._scrollView._dtpFadeSize,
+              ),
+          ])
 
-        if (!appIcon.isDragged && iconAnimationSettings.type == 'SIMPLE')
-          appIcon.get_parent().raise(1)
-        else if (
-          !appIcon.isDragged &&
-          (iconAnimationSettings.type == 'RIPPLE' ||
-            iconAnimationSettings.type == 'PLANK')
+          if (!appIcon.isDragged && iconAnimationSettings.type == 'SIMPLE')
+            appIcon.get_parent().raise(1)
+          else if (
+            !appIcon.isDragged &&
+            (iconAnimationSettings.type == 'RIPPLE' ||
+              iconAnimationSettings.type == 'PLANK')
+          )
+            this._updateIconAnimations()
+        } else {
+          this._timeoutsHandler.remove(T1)
+
+          if (!appIcon.isDragged && iconAnimationSettings.type == 'SIMPLE')
+            appIcon.get_parent().raise(0)
+        }
+      }),
+    )
+
+    appIconSignalIds.push(
+      appIcon.connect('clicked', (actor) => {
+        Utils.ensureActorVisibleInScrollView(
+          this._scrollView,
+          actor,
+          this._scrollView._dtpFadeSize,
         )
-          this._updateIconAnimations()
-      } else {
-        this._timeoutsHandler.remove(T1)
+      }),
+    )
 
-        if (!appIcon.isDragged && iconAnimationSettings.type == 'SIMPLE')
-          appIcon.get_parent().raise(0)
-      }
-    }))
+    appIconSignalIds.push(
+      appIcon.connect('key-focus-in', (actor) => {
+        let [x_shift, y_shift] = Utils.ensureActorVisibleInScrollView(
+          this._scrollView,
+          actor,
+          this._scrollView._dtpFadeSize,
+        )
 
-    appIconSignalIds.push(appIcon.connect('clicked', (actor) => {
-      Utils.ensureActorVisibleInScrollView(
-        this._scrollView,
-        actor,
-        this._scrollView._dtpFadeSize,
-      )
-    }))
-
-    appIconSignalIds.push(appIcon.connect('key-focus-in', (actor) => {
-      let [x_shift, y_shift] = Utils.ensureActorVisibleInScrollView(
-        this._scrollView,
-        actor,
-        this._scrollView._dtpFadeSize,
-      )
-
-      // This signal is triggered also by mouse click. The popup menu is opened at the original
-      // coordinates. Thus correct for the shift which is going to be applied to the scrollview.
-      if (appIcon._menu) {
-        appIcon._menu._boxPointer.xOffset = -x_shift
-        appIcon._menu._boxPointer.yOffset = -y_shift
-      }
-    }))
+        // This signal is triggered also by mouse click. The popup menu is opened at the original
+        // coordinates. Thus correct for the shift which is going to be applied to the scrollview.
+        if (appIcon._menu) {
+          appIcon._menu._boxPointer.xOffset = -x_shift
+          appIcon._menu._boxPointer.yOffset = -y_shift
+        }
+      }),
+    )
 
     appIcon.connect('destroy', () => {
-      appIconSignalIds.forEach(id => appIcon.disconnect(id))
+      appIconSignalIds.forEach((id) => appIcon.disconnect(id))
       if (appIcon._draggable) {
-        draggableSignalIds.forEach(id => appIcon._draggable.disconnect(id))
+        draggableSignalIds.forEach((id) => appIcon._draggable.disconnect(id))
       }
     })
 
