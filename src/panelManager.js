@@ -308,21 +308,26 @@ export const PanelManager = class {
     this._setKeyBindings(true)
 
     // keep GS overview.js from blowing away custom panel styles
-    if (!keepGsTopPanel)
+    if (!keepGsTopPanel) {
       Object.defineProperty(Main.panel, 'style', {
         configurable: true,
         set() {},
       })
+    }
 
-      this._shutdownId = global.connect('shutdown', () => {
-        this.allPanels.forEach(p => {
-          this._removePanelBarriers(p);
-        });
-      });
+    // panel barriers must be removed on shutdown regardless of keepGsTopPanel
+    this._shutdownId = global.connect('shutdown', () => {
+      this.allPanels.forEach((p) => {
+        this._removePanelBarriers(p)
+      })
+    })
   }
 
   disable(reset) {
-    global.disconnect(this._shutdownId);
+    if (this._shutdownId) {
+      global.disconnect(this._shutdownId)
+      this._shutdownId = null
+    }
     this.primaryPanel && this.overview.disable()
     this.proximityManager.destroy()
 
