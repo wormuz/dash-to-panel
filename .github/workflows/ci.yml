@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+      - integrate-fixes
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  lint-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install npm dependencies
+        run: npm install --no-save
+
+      - name: Prettier check
+        run: npx prettier --check 'src/**/*.js'
+
+      - name: ESLint
+        run: npx eslint 'src/**/*.js'
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gettext libglib2.0-bin zip
+
+      - name: Build (schemas + locales + zip)
+        run: make zip-file
