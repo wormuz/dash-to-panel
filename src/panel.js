@@ -444,7 +444,7 @@ export const Panel = GObject.registerClass(
       this._unmappedButtons.forEach((a) => {
         try {
           this._disconnectVisibleId(a)
-        } catch (e) {
+        } catch {
           // actor may have already been destroyed
         }
       })
