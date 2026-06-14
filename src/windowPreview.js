@@ -1111,6 +1111,10 @@ export const Preview = GObject.registerClass(
     }
 
     _onCloseBtnClick() {
+      // guard against double-tap: a second click before the preview is torn
+      // down would crash on the already-disposed actor (upstream #1969)
+      if (!this.reactive) return
+
       this._hideOrShowCloseButton(true)
       this.reactive = false
 
